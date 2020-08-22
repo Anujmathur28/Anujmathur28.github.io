@@ -5,39 +5,66 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anuj Mathur</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 </head>
 
 <div class="header">
-    <div class="socialBar">
-        <ul>
-            <li>Email</li>
-            <li>LinkedIn</li>
-            <li>Github</li>
+    <nav>
+        <ul class = "socialLeft">
+           <li><a href = "#"><i class ="fa fa-home"></i></a></li>
+           <li><a href = "#"><i class ="fa fa-google"></i></a></li>
+           <li><a href = "#"><i class ="fa fa-linkedin"></i></a></li>
+           <li><a href = "#"><i class ="fa fa-github"></i></a></li>
         </ul>
-    </div>
+        <ul class = "right">
+            <li><a href = "#">About Me</a></li>
+            <li><a href = "#">Fun Zone</a></li>
+         </ul>
+    </nav>
 </div>
 
-<body>
+<body onload="reloadQuote();">
+    <div class="mainPage">
+        <div class="title">
+            <h1>Hi, I'm Anuj Mathur!</h1>
+            <h2>Welcome to my website</h2>
+        </div>
 
-    <div class="title">
-        <h1>Hi, I'm Anuj Mathur!</h1>
-        <h2>Welcome to my website</h2>
+        <div class="quoteBody">
+            <div class="quote">
+                <p>
+                    <pre id="quote"></pre>
+                </p>
+                <p>
+                    <pre id="author"></pre>
+                </p>
+            </div>
+            <div class="nextQuote">
+                <button id="click" onclick="reloadQuote();"><span class=reload>&#x21bb;</span></button>
+            </div>
+
+        </div>
+    </div>
+    <div class="aboutMe">
+        <p>I am a third year Electrical Engineering Student at Carleton University.</p>
+    </div>
+    <div class="proj">
+        <p>Here are some of my Projects:</p>
+        <p>Link to Projects</p>
     </div>
 
-    <div class="quoteBody">
-        <p>
-            <pre id="quote"></pre>
-        </p>
-        <p>
-            <pre id="author"></pre>
-        </p>
-    </div>
+    <div class="checkOut">
+        <p>Check this out:</p>
+        <div class="funFact"></div>
 
+        <div class="guessThisWord"></div>
+    </div>
 </body>
 
+<footer>
+
+</footer>
 <script src="scripts.js">
 </script>
 
