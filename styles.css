@@ -56,11 +56,26 @@ li {
     background-color: white;
 }
 
+
 #quotes {
-    font-family: Arial, Helvetica, sans-serif;
-    font-style: italic;
-    font-size: 20px;
+    font-family: 'Barlow', sans-serif;
+    font-size: 100px;
     color: #3b305e;
+    word-wrap: normal;
+    word-break: break-word;
+    white-space: normal;
+    display: flex;
+    padding-right: 10px;
+    margin: auto;
+    line-height: 0.95;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    background-image: linear-gradient(to left, #0bb5f8,#1fa4d8);
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-align: left;
 }
 
 #author {
