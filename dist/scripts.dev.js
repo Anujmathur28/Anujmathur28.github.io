@@ -12,14 +12,15 @@ var reloadQuote = function reloadQuote() {
 /**************************************************************************/
 
 
-var imageGame = function imageGame() {
+var imageGame = function imageGame(text) {
   var photosHeight;
   var photosHtml;
   var photosReference;
   var photosWidth;
   var placeId;
-  var key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM';
-  var inputText = document.getElementById("searchTextField").value;
+  var key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM'; // const inputText = document.getElementById("searchTextField").value;
+
+  var inputText = text;
   var proxyUrl = "https://cors-anywhere.herokuapp.com/";
   var queryUrl = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=".concat(inputText, "&inputtype=textquery&fields=photos,geometry,place_id,type,formatted_address,name,opening_hours,rating&key=").concat(key);
   fetch(proxyUrl + queryUrl).then(function (response) {
@@ -31,11 +32,6 @@ var imageGame = function imageGame() {
     photosHtml = photosObject.html_attributions;
     photosReference = photosObject.photo_reference;
     photosWidth = photosObject.width;
-    var text = '<img src = ';
-    var imgUrl = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=".concat(photosReference, "&key=").concat(key);
-    var text2 = " id=cd alt=".concat(photosReference, "></img>");
-    var totalText = text + imgUrl + text2;
-    document.getElementById("photo").innerHTML = totalText;
   }).then(function (data) {
     var imgUrl = "https://maps.googleapis.com/maps/api/place/details/json?place_id=".concat(placeId, "&fields=icon,photo,name,rating&key=").concat(key);
     fetch(proxyUrl + imgUrl).then(function (response) {
@@ -47,7 +43,6 @@ var imageGame = function imageGame() {
       var _loop = function _loop(index) {
         var reference = photoArray[index].photo_reference;
         setTimeout(function () {
-          console.log(reference);
           var text1 = '<img src = ';
           var imgUrl1 = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=".concat(reference, "&key=").concat(key);
           var text21 = " id=cd alt=".concat(reference, "></img>");
@@ -83,3 +78,57 @@ function initialize() {
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
+/************************************************************************************/
+
+function myMap() {
+  var mapProp = {
+    center: new google.maps.LatLng(51.508742, -0.120850),
+    zoom: 5
+  };
+  var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+}
+/************************************************************************************/
+
+
+var city = function _callee() {
+  var total, where, response, data, numb;
+  return regeneratorRuntime.async(function _callee$(_context) {
+    while (1) {
+      switch (_context.prev = _context.next) {
+        case 0:
+          total = 245;
+          where = encodeURIComponent(JSON.stringify({
+            "capital": {
+              "$exists": true
+            }
+          }));
+          _context.next = 4;
+          return regeneratorRuntime.awrap(fetch("https://parseapi.back4app.com/classes/Continentscountriescities_Country?limit=".concat(total, "&order=emoji&excludeKeys=emoji,phone,currency,shape&where=").concat(where), {
+            headers: {
+              'X-Parse-Application-Id': 'g5GddGZX5VkbEL3fuVL1HGrvY8k7BkzcOCAK0UFA',
+              // This is your app's application id
+              'X-Parse-REST-API-Key': 'FrSe7oACe16OuMzNGPaDV3np6tzIpl3AZwVgACEG' // This is your app's REST API key
+
+            }
+          }));
+
+        case 4:
+          response = _context.sent;
+          _context.next = 7;
+          return regeneratorRuntime.awrap(response.json());
+
+        case 7:
+          data = _context.sent;
+          numb = Math.floor(Math.random() * total);
+
+          if (typeof data.results[numb].capital !== 'undefined') {
+            imageGame(data.results[numb].capital);
+          }
+
+        case 10:
+        case "end":
+          return _context.stop();
+      }
+    }
+  });
+}();
