@@ -1,3 +1,12 @@
+let photosHeight;
+let photosHtml;
+let photosReference;
+let photosWidth;
+let placeId;
+const key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM';
+const inputText = "statue of liberty";
+const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+
 var reloadQuote = function () {
     var numb = Math.floor(Math.random() * 1643);
     fetch("https://type.fit/api/quotes").then(function (response) {
@@ -8,24 +17,14 @@ var reloadQuote = function () {
     });
 }
 
-let photosHeight;
-let photosHtml;
-let photosReference;
-let photosWidth;
-const key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM';
-const inputText = "Ottawa";
-
-//var getImage = function () {
-const proxyUrl = "https://cors-anywhere.herokuapp.com/";
-let queryUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input="${inputText}"&inputtype=textquery&fields=photos,formatted_address,name,opening_hours,rating&key=${key}`;
+let queryUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${inputText}&inputtype=textquery&fields=photos,geometry,place_id,type,formatted_address,name,opening_hours,rating&key=${key}`;
 fetch(proxyUrl + queryUrl).then(function (response) {
     return response.json();
     
 }).then(function (data) {
-    //if (!error && response.statusCode == 200) {
-
     var photosObject = data.candidates[0].photos[0];
-
+    placeId = "'" + data.candidates[0].place_id + "'";
+    //console.log(placeId);
     photosHeight = photosObject.height;
     photosHtml = photosObject.html_attributions;
     photosReference = photosObject.photo_reference;
@@ -40,3 +39,17 @@ fetch(proxyUrl + queryUrl).then(function (response) {
     // }
 });
 //}
+
+//var getImage = function () {
+    placeId = 'ChIJN1t_tDeuEmsRUsoyG83frY4';
+    let imgUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=icon,photo,name,rating&key=${key}`;
+    fetch(proxyUrl + imgUrl).then(function (response) {
+        return response.json();
+        
+    }).then(function (data) {
+        //if (!error && response.statusCode == 200) {
+        console.log(data);
+            
+        // }
+    });
+    //}
