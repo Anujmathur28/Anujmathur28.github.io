@@ -13,7 +13,7 @@ let photosHtml;
 let photosReference;
 let photosWidth;
 const key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM';
-const inputText = "canada";
+const inputText = "Ottawa";
 
 //var getImage = function () {
 const proxyUrl = "https://cors-anywhere.herokuapp.com/";
@@ -30,14 +30,13 @@ fetch(proxyUrl + queryUrl).then(function (response) {
     photosHtml = photosObject.html_attributions;
     photosReference = photosObject.photo_reference;
     photosWidth = photosObject.width;
-    console.log(data);
-/*    
+    
     let text = '<img src = ';
     let imgUrl = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photosReference}&key=${key}`;
     let text2 = ` id=cd alt=${photosReference}></img>`;
     let totalText = text + imgUrl + text2;
     document.getElementById("photo").innerHTML = totalText;
-*/
+
     // }
 });
 //}
