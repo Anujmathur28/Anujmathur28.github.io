@@ -1,3 +1,6 @@
+let guessPoint;
+let actualPoint;
+
 var reloadQuote = function () {
     var numb = Math.floor(Math.random() * 1643);
     fetch("https://type.fit/api/quotes").then(function (response) {
@@ -9,6 +12,7 @@ var reloadQuote = function () {
 }
 /**************************************************************************/
 var imageGame = function (text) {
+    myMap();
     let photosHeight;
     let photosHtml;
     let photosReference;
@@ -17,6 +21,7 @@ var imageGame = function (text) {
     const key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM';
    // const inputText = document.getElementById("searchTextField").value;
     const inputText = text;
+    //console.log(inputText);
     const proxyUrl = "https://cors-anywhere.herokuapp.com/";
     let queryUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${inputText}&inputtype=textquery&fields=photos,geometry,place_id,type,formatted_address,name,opening_hours,rating&key=${key}`;
 
@@ -31,12 +36,14 @@ var imageGame = function (text) {
             photosWidth = photosObject.width;
         })
         .then(function (data) {
-            let imgUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=icon,photo,name,rating&key=${key}`;
+            let imgUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=geometry,plus_code,photo,name,rating&key=${key}`;
 
             fetch(proxyUrl + imgUrl).then(function (response) {
                 return response.json();
 
             }).then(function (data) {
+                actualPoint = data.result.geometry.location;
+               
                 let offset = 0;
                 let photoArray = data.result.photos;
                 for (let index = 0; index < photoArray.length; index++) {
@@ -67,7 +74,7 @@ var imageGame = function (text) {
                     let totalText1 = text1 + imgUrl1 + text21;
                     
                     document.getElementById("photo").innerHTML = totalText1;*/
-/*********************************************************************************/
+/*********************************************************************************
 function initialize() {
     var input = document.getElementById('searchTextField');
     new google.maps.places.Autocomplete(input);
@@ -75,18 +82,67 @@ function initialize() {
 
 google.maps.event.addDomListener(window, 'load', initialize);
 
-/************************************************************************************/
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM&libraries=places"></script>
+
+/************************************************************************************
 function myMap() {
     var mapProp = {
         center: new google.maps.LatLng(51.508742, -0.120850),
         zoom: 5,
+        
     };
     var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
 }
 
 /************************************************************************************/
+function theMap() {
+    const map = new google.maps.Map(document.getElementById("googleMap"), {
+        zoom: 4,
+        center: { lat: -25.363882, lng: 131.044922 }
+      });
+    return map;
+}
+function myMap() {
+    let count = 0; 
+    let map = theMap();
+    map.addListener("click", e => {
+      count = count + 1;
+      if(count <= 1){
+      placeMarkerAndPanTo(e.latLng, map);
+    }else{
+        myMap();
+    }
+    });
+  }
+  
+  function placeMarkerAndPanTo(latLng, map) {
+      
+    new google.maps.Marker({
+      position: latLng,
+      map: map
+    });
+    map.panTo(latLng);
+    
+    let lat = latLng.lat();
+    let long = latLng.lng();
+    guessPoint = {lat: lat, lng: long };
+ 
+  }
 
-let city = (async () => {
+  function submitGuess(){
+    let map = theMap();
+    
+    if(typeof actualPoint !== 'undefined'){
+    var mk1 = new google.maps.Marker({position: actualPoint, map: map});
+    //var mk2 = new google.maps.Marker({position: guessPoint, map: map});
+    var line = new google.maps.Polyline({path: [actualPoint, guessPoint], map: map});
+    }else{
+       myMap();
+    }
+  }
+ 
+
+async function city () {
     let total = 245;
     const where = encodeURIComponent(JSON.stringify({
         "capital": {
@@ -107,8 +163,8 @@ let city = (async () => {
     var numb = Math.floor(Math.random() * total);
     if (typeof data.results[numb].capital !== 'undefined') {
 
-        imageGame(data.results[numb].capital);
+        imageGame( data.results[numb].capital );
     }
 
 
-})();
+};

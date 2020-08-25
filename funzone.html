@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
         integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300&display=swap" rel="stylesheet">
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM&libraries=places"></script>
+
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM&callback=myMap"></script>
     <title>Fun Zone</title>
 </head>
@@ -27,7 +27,7 @@
     </nav>
 </div>
 
-<body onload="myMap();">
+<body >
     <div class="maps">
         <div id="googleMap" style="width:50%;height:400px;"></div>
     </div>
@@ -38,7 +38,8 @@
 
     <div id="pac-container">
         <input id="searchTextField" type="text" size="50" placeholder="Enter a location" />
-        <input name="button" onclick="city();" type="button" value="Execute" />
+        <input name="button" onclick="city();" type="button" value="Play Game" />
+        <input name="button" onclick="submitGuess();" type="button" value="Submit Guess" />
     </div>
 
 

@@ -1,5 +1,8 @@
 "use strict";
 
+var guessPoint;
+var actualPoint;
+
 var reloadQuote = function reloadQuote() {
   var numb = Math.floor(Math.random() * 1643);
   fetch("https://type.fit/api/quotes").then(function (response) {
@@ -13,6 +16,7 @@ var reloadQuote = function reloadQuote() {
 
 
 var imageGame = function imageGame(text) {
+  myMap();
   var photosHeight;
   var photosHtml;
   var photosReference;
@@ -20,7 +24,8 @@ var imageGame = function imageGame(text) {
   var placeId;
   var key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM'; // const inputText = document.getElementById("searchTextField").value;
 
-  var inputText = text;
+  var inputText = text; //console.log(inputText);
+
   var proxyUrl = "https://cors-anywhere.herokuapp.com/";
   var queryUrl = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=".concat(inputText, "&inputtype=textquery&fields=photos,geometry,place_id,type,formatted_address,name,opening_hours,rating&key=").concat(key);
   fetch(proxyUrl + queryUrl).then(function (response) {
@@ -33,10 +38,11 @@ var imageGame = function imageGame(text) {
     photosReference = photosObject.photo_reference;
     photosWidth = photosObject.width;
   }).then(function (data) {
-    var imgUrl = "https://maps.googleapis.com/maps/api/place/details/json?place_id=".concat(placeId, "&fields=icon,photo,name,rating&key=").concat(key);
+    var imgUrl = "https://maps.googleapis.com/maps/api/place/details/json?place_id=".concat(placeId, "&fields=geometry,plus_code,photo,name,rating&key=").concat(key);
     fetch(proxyUrl + imgUrl).then(function (response) {
       return response.json();
     }).then(function (data) {
+      actualPoint = data.result.geometry.location;
       var offset = 0;
       var photoArray = data.result.photos;
 
@@ -69,30 +75,91 @@ var imageGame = function imageGame(text) {
                     
                     document.getElementById("photo").innerHTML = totalText1;*/
 
-/*********************************************************************************/
-
-
+/*********************************************************************************
 function initialize() {
-  var input = document.getElementById('searchTextField');
-  new google.maps.places.Autocomplete(input);
+    var input = document.getElementById('searchTextField');
+    new google.maps.places.Autocomplete(input);
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM&libraries=places"></script>
+
+/************************************************************************************
+function myMap() {
+    var mapProp = {
+        center: new google.maps.LatLng(51.508742, -0.120850),
+        zoom: 5,
+        
+    };
+    var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+}
+
 /************************************************************************************/
+
+
+function theMap() {
+  var map = new google.maps.Map(document.getElementById("googleMap"), {
+    zoom: 4,
+    center: {
+      lat: -25.363882,
+      lng: 131.044922
+    }
+  });
+  return map;
+}
 
 function myMap() {
-  var mapProp = {
-    center: new google.maps.LatLng(51.508742, -0.120850),
-    zoom: 5
-  };
-  var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+  var count = 0;
+  var map = theMap();
+  map.addListener("click", function (e) {
+    count = count + 1;
+
+    if (count <= 1) {
+      placeMarkerAndPanTo(e.latLng, map);
+    } else {
+      myMap();
+    }
+  });
 }
-/************************************************************************************/
 
+function placeMarkerAndPanTo(latLng, map) {
+  new google.maps.Marker({
+    position: latLng,
+    map: map
+  });
+  map.panTo(latLng);
+  var lat = latLng.lat();
 
-var city = function _callee() {
+  var _long = latLng.lng();
+
+  guessPoint = {
+    lat: lat,
+    lng: _long
+  };
+}
+
+function submitGuess() {
+  var map = theMap();
+
+  if (typeof actualPoint !== 'undefined') {
+    var mk1 = new google.maps.Marker({
+      position: actualPoint,
+      map: map
+    }); //var mk2 = new google.maps.Marker({position: guessPoint, map: map});
+
+    var line = new google.maps.Polyline({
+      path: [actualPoint, guessPoint],
+      map: map
+    });
+  } else {
+    myMap();
+  }
+}
+
+function city() {
   var total, where, response, data, numb;
-  return regeneratorRuntime.async(function _callee$(_context) {
+  return regeneratorRuntime.async(function city$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
@@ -131,4 +198,6 @@ var city = function _callee() {
       }
     }
   });
-}();
+}
+
+;
