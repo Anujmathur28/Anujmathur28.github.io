@@ -20,11 +20,24 @@ var reloadQuote = function reloadQuote() {
     document.getElementById("author").innerHTML = data[numb].author;
   });
 };
-/**************************************************************************/
 
+var submitButton = document.getElementById('submitButton');
+submitButton.style.display = 'none';
+var googleMap = document.getElementById('googleMap');
+googleMap.style.display = 'none';
+var paragraphDescription = document.getElementById('paragraphDescription');
+var playAgain = document.getElementById('playAgain');
+playAgain.style.display = 'none';
+var play = document.getElementById('play');
+/**************************************************************************/
 
 var imageGame = function imageGame(text) {
   myMap();
+  play.style.display = 'none';
+  playAgain.style.display = 'none';
+  submitButton.style.display = 'block';
+  googleMap.style.display = 'block';
+  paragraphDescription.style.display = 'none';
   var key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM'; // const inputText = document.getElementById("searchTextField").value;
 
   var inputText = text; //console.log(inputText);
@@ -146,6 +159,8 @@ function haversine_distance(mk1, mk2) {
 
 
 function submitGuess() {
+  submitButton.style.display = 'none';
+  playAgain.style.display = 'block';
   var map = theMap();
 
   if (typeof actualPoint !== 'undefined') {
@@ -215,4 +230,10 @@ function city() {
 }
 
 ;
+
+(function ($) {
+  $(document).on('contextmenu', 'img', function () {
+    return false;
+  });
+})(jQuery);
 /**************************************************************************/
