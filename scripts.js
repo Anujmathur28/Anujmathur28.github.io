@@ -152,8 +152,10 @@ function haversine_distance(mk1, mk2) {
 /**************************************************************************/
 function submitGuess() {
     let map = theMap();
-
+    
     if (typeof actualPoint !== 'undefined') {
+        
+
         var mk1 = new google.maps.Marker({
             position: actualPoint,
             map: map
@@ -169,10 +171,13 @@ function submitGuess() {
             path: [actualPoint, guessPoint],
             map: map
         });
+        
+        
     } else {
         myMap();
     }
 }
+
 
 /**************************************************************************/
 
