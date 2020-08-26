@@ -1,5 +1,7 @@
 let guessPoint;
 let actualPoint;
+let markers = [];
+let count;
 
 let photosHeight;
 let photosHtml;
@@ -53,20 +55,20 @@ var imageGame = function (text) {
                 let totalText1 = "";
                 for (let index = 0; index < photoArray.length; index++) {
                     let reference = photoArray[index].photo_reference;
-                   // setTimeout(function () {
-                        totalText1 += '<img src = ';
-                        totalText1 += `https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photoreference=${reference}&key=${key}`;
-                        totalText1 += ` id=cd alt=maps width="600" height="500"></img>`;
-                        totalText1 += "    ";
-                       
-                        
-//<div class="container">    <img src="images/bhutan1.jpg" alt="Bhutan">    <img src="images/bhutan2.jpg" alt="Bhutan">    <img src="images/bhutan3.jpg" alt="Bhutan">    <img src="images/bhutan4.jpg" alt="Bhutan">    <img src="images/bhutan5.jpg" alt="Bhutan">    <img src="images/bhutan6.jpg" alt="Bhutan">    <img src="images/bhutan7.jpg" alt="Bhutan"></div>
-    
-                        document.getElementById("photo").innerHTML = totalText1;
-                        
+                    // setTimeout(function () {
+                    totalText1 += '<img src = ';
+                    totalText1 += `https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photoreference=${reference}&key=${key}`;
+                    totalText1 += ` id=cd alt=maps width="600" height="500"></img>`;
+                    totalText1 += "    ";
 
-                  //  }, 2000 + offset);
-                   // offset += 2000;
+
+                    //<div class="container">    <img src="images/bhutan1.jpg" alt="Bhutan">    <img src="images/bhutan2.jpg" alt="Bhutan">    <img src="images/bhutan3.jpg" alt="Bhutan">    <img src="images/bhutan4.jpg" alt="Bhutan">    <img src="images/bhutan5.jpg" alt="Bhutan">    <img src="images/bhutan6.jpg" alt="Bhutan">    <img src="images/bhutan7.jpg" alt="Bhutan"></div>
+
+                    document.getElementById("photo").innerHTML = totalText1;
+
+
+                    //  }, 2000 + offset);
+                    // offset += 2000;
                 }
 
             });
@@ -88,26 +90,41 @@ function theMap() {
 
 /**************************************************************************/
 function myMap() {
-    let count = 0;
+    count = 0;
     let map = theMap();
+    // var marker = new google.maps.Marker({
+    //   map:map
+    //});
     map.addListener("click", e => {
-        count = count + 1;
-        if (count <= 1) {
-            placeMarkerAndPanTo(e.latLng, map);
-        } else {
-            myMap();
-        }
+        count++;
+        placeMarkerAndPanTo(e.latLng, map);
     });
 }
 
 /**************************************************************************/
+function clearMarkers() {
+    setMapOnAll(null);
+}
+
+function setMapOnAll(map) {
+    for (let i = 0; i < markers.length; i++) {
+        markers[i].setMap(map);
+    }
+}
+
 
 function placeMarkerAndPanTo(latLng, map) {
 
-    new google.maps.Marker({
+    var marker = new google.maps.Marker({
         position: latLng,
         map: map
     });
+    if (count > 1) {
+        clearMarkers();
+    }
+
+    markers.push(marker);
+
     map.panTo(latLng);
 
     let lat = latLng.lat();
@@ -116,8 +133,8 @@ function placeMarkerAndPanTo(latLng, map) {
         lat: lat,
         lng: long
     };
-
 }
+
 
 /**************************************************************************/
 

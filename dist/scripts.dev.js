@@ -2,6 +2,8 @@
 
 var guessPoint;
 var actualPoint;
+var markers = [];
+var count;
 var photosHeight;
 var photosHtml;
 var photosReference;
@@ -79,26 +81,40 @@ function theMap() {
 
 
 function myMap() {
-  var count = 0;
-  var map = theMap();
-  map.addListener("click", function (e) {
-    count = count + 1;
+  count = 0;
+  var map = theMap(); // var marker = new google.maps.Marker({
+  //   map:map
+  //});
 
-    if (count <= 1) {
-      placeMarkerAndPanTo(e.latLng, map);
-    } else {
-      myMap();
-    }
+  map.addListener("click", function (e) {
+    count++;
+    placeMarkerAndPanTo(e.latLng, map);
   });
 }
 /**************************************************************************/
 
 
+function clearMarkers() {
+  setMapOnAll(null);
+}
+
+function setMapOnAll(map) {
+  for (var i = 0; i < markers.length; i++) {
+    markers[i].setMap(map);
+  }
+}
+
 function placeMarkerAndPanTo(latLng, map) {
-  new google.maps.Marker({
+  var marker = new google.maps.Marker({
     position: latLng,
     map: map
   });
+
+  if (count > 1) {
+    clearMarkers();
+  }
+
+  markers.push(marker);
   map.panTo(latLng);
   var lat = latLng.lat();
 
