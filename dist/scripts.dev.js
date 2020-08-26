@@ -2,6 +2,12 @@
 
 var guessPoint;
 var actualPoint;
+var photosHeight;
+var photosHtml;
+var photosReference;
+var photosWidth;
+var placeId;
+/**************************************************************************/
 
 var reloadQuote = function reloadQuote() {
   var numb = Math.floor(Math.random() * 1643);
@@ -17,11 +23,6 @@ var reloadQuote = function reloadQuote() {
 
 var imageGame = function imageGame(text) {
   myMap();
-  var photosHeight;
-  var photosHtml;
-  var photosReference;
-  var photosWidth;
-  var placeId;
   var key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM'; // const inputText = document.getElementById("searchTextField").value;
 
   var inputText = text; //console.log(inputText);
@@ -42,60 +43,26 @@ var imageGame = function imageGame(text) {
     fetch(proxyUrl + imgUrl).then(function (response) {
       return response.json();
     }).then(function (data) {
-      actualPoint = data.result.geometry.location;
-      var offset = 0;
-      var photoArray = data.result.photos;
+      actualPoint = data.result.geometry.location; //let offset = 0;
 
-      var _loop = function _loop(index) {
-        var reference = photoArray[index].photo_reference;
-        setTimeout(function () {
-          var text1 = '<img src = ';
-          var imgUrl1 = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=".concat(reference, "&key=").concat(key);
-          var text21 = " id=cd alt=".concat(reference, "></img>");
-          var totalText1 = text1 + imgUrl1 + text21;
-          document.getElementById("photo").innerHTML = totalText1;
-        }, 2000 + offset);
-        offset += 2000;
-      };
+      var photoArray = data.result.photos;
+      var totalText1 = "";
 
       for (var index = 0; index < photoArray.length; index++) {
-        _loop(index);
+        var reference = photoArray[index].photo_reference; // setTimeout(function () {
+
+        totalText1 += '<img src = ';
+        totalText1 += "https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photoreference=".concat(reference, "&key=").concat(key);
+        totalText1 += " id=cd alt=maps width=\"600\" height=\"500\"></img>";
+        totalText1 += "    "; //<div class="container">    <img src="images/bhutan1.jpg" alt="Bhutan">    <img src="images/bhutan2.jpg" alt="Bhutan">    <img src="images/bhutan3.jpg" alt="Bhutan">    <img src="images/bhutan4.jpg" alt="Bhutan">    <img src="images/bhutan5.jpg" alt="Bhutan">    <img src="images/bhutan6.jpg" alt="Bhutan">    <img src="images/bhutan7.jpg" alt="Bhutan"></div>
+
+        document.getElementById("photo").innerHTML = totalText1; //  }, 2000 + offset);
+        // offset += 2000;
       }
     });
   });
-}; //let imageGames(){
-//  console.log()
-//}
-
-/* 
-                    let text1 = '<img src = ';
-                    let imgUrl1 = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${reference}&key=${key}`;
-                    let text21 = ` id=cd alt=${reference}></img>`;
-                    let totalText1 = text1 + imgUrl1 + text21;
-                    
-                    document.getElementById("photo").innerHTML = totalText1;*/
-
-/*********************************************************************************
-function initialize() {
-    var input = document.getElementById('searchTextField');
-    new google.maps.places.Autocomplete(input);
-}
-
-google.maps.event.addDomListener(window, 'load', initialize);
-
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM&libraries=places"></script>
-
-/************************************************************************************
-function myMap() {
-    var mapProp = {
-        center: new google.maps.LatLng(51.508742, -0.120850),
-        zoom: 5,
-        
-    };
-    var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
-}
-
-/************************************************************************************/
+};
+/**************************************************************************/
 
 
 function theMap() {
@@ -108,6 +75,8 @@ function theMap() {
   });
   return map;
 }
+/**************************************************************************/
+
 
 function myMap() {
   var count = 0;
@@ -122,6 +91,8 @@ function myMap() {
     }
   });
 }
+/**************************************************************************/
+
 
 function placeMarkerAndPanTo(latLng, map) {
   new google.maps.Marker({
@@ -138,6 +109,25 @@ function placeMarkerAndPanTo(latLng, map) {
     lng: _long
   };
 }
+/**************************************************************************/
+
+
+function haversine_distance(mk1, mk2) {
+  var R = 3958.8; // Radius of the Earth in miles
+
+  var rlat1 = mk1.position.lat() * (Math.PI / 180); // Convert degrees to radians
+
+  var rlat2 = mk2.position.lat() * (Math.PI / 180); // Convert degrees to radians
+
+  var difflat = rlat2 - rlat1; // Radian difference (latitudes)
+
+  var difflon = (mk2.position.lng() - mk1.position.lng()) * (Math.PI / 180); // Radian difference (longitudes)
+
+  var d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat / 2) * Math.sin(difflat / 2) + Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon / 2) * Math.sin(difflon / 2)));
+  return d;
+}
+/**************************************************************************/
+
 
 function submitGuess() {
   var map = theMap();
@@ -146,8 +136,14 @@ function submitGuess() {
     var mk1 = new google.maps.Marker({
       position: actualPoint,
       map: map
-    }); //var mk2 = new google.maps.Marker({position: guessPoint, map: map});
-
+    });
+    var mk2 = new google.maps.Marker({
+      position: guessPoint,
+      map: map
+    });
+    var distM = haversine_distance(mk1, mk2);
+    var distKm = distM * 1.60934;
+    document.getElementById("distance").innerHTML = distKm;
     var line = new google.maps.Polyline({
       path: [actualPoint, guessPoint],
       map: map
@@ -156,6 +152,8 @@ function submitGuess() {
     myMap();
   }
 }
+/**************************************************************************/
+
 
 function city() {
   var total, where, response, data, numb;
@@ -201,3 +199,4 @@ function city() {
 }
 
 ;
+/**************************************************************************/

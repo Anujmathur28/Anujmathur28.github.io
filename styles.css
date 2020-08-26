@@ -84,3 +84,5 @@ li {
     font-size: 20px;
     color: black;
 }
+
+.photoBody {    display: flex;    overflow-x: auto;}

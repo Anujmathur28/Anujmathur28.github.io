@@ -1,6 +1,13 @@
 let guessPoint;
 let actualPoint;
 
+let photosHeight;
+let photosHtml;
+let photosReference;
+let photosWidth;
+let placeId;
+
+/**************************************************************************/
 var reloadQuote = function () {
     var numb = Math.floor(Math.random() * 1643);
     fetch("https://type.fit/api/quotes").then(function (response) {
@@ -10,16 +17,13 @@ var reloadQuote = function () {
         document.getElementById("author").innerHTML = data[numb].author;
     });
 }
+
 /**************************************************************************/
 var imageGame = function (text) {
     myMap();
-    let photosHeight;
-    let photosHtml;
-    let photosReference;
-    let photosWidth;
-    let placeId;
+
     const key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM';
-   // const inputText = document.getElementById("searchTextField").value;
+    // const inputText = document.getElementById("searchTextField").value;
     const inputText = text;
     //console.log(inputText);
     const proxyUrl = "https://cors-anywhere.herokuapp.com/";
@@ -43,106 +47,119 @@ var imageGame = function (text) {
 
             }).then(function (data) {
                 actualPoint = data.result.geometry.location;
-               
-                let offset = 0;
+
+                //let offset = 0;
                 let photoArray = data.result.photos;
+                let totalText1 = "";
                 for (let index = 0; index < photoArray.length; index++) {
                     let reference = photoArray[index].photo_reference;
-                    setTimeout(function () {
-                        let text1 = '<img src = ';
-                        let imgUrl1 = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${reference}&key=${key}`;
-                        let text21 = ` id=cd alt=${reference}></img>`;
-                        let totalText1 = text1 + imgUrl1 + text21;
-
+                   // setTimeout(function () {
+                        totalText1 += '<img src = ';
+                        totalText1 += `https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photoreference=${reference}&key=${key}`;
+                        totalText1 += ` id=cd alt=maps width="600" height="500"></img>`;
+                        totalText1 += "    ";
+                       
+                        
+//<div class="container">    <img src="images/bhutan1.jpg" alt="Bhutan">    <img src="images/bhutan2.jpg" alt="Bhutan">    <img src="images/bhutan3.jpg" alt="Bhutan">    <img src="images/bhutan4.jpg" alt="Bhutan">    <img src="images/bhutan5.jpg" alt="Bhutan">    <img src="images/bhutan6.jpg" alt="Bhutan">    <img src="images/bhutan7.jpg" alt="Bhutan"></div>
+    
                         document.getElementById("photo").innerHTML = totalText1;
+                        
 
-                    }, 2000 + offset);
-                    offset += 2000;
+                  //  }, 2000 + offset);
+                   // offset += 2000;
                 }
 
             });
         });
 }
 
-//let imageGames(){
-//  console.log()
-//}
-/* 
-                    let text1 = '<img src = ';
-                    let imgUrl1 = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${reference}&key=${key}`;
-                    let text21 = ` id=cd alt=${reference}></img>`;
-                    let totalText1 = text1 + imgUrl1 + text21;
-                    
-                    document.getElementById("photo").innerHTML = totalText1;*/
-/*********************************************************************************
-function initialize() {
-    var input = document.getElementById('searchTextField');
-    new google.maps.places.Autocomplete(input);
-}
+/**************************************************************************/
 
-google.maps.event.addDomListener(window, 'load', initialize);
-
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM&libraries=places"></script>
-
-/************************************************************************************
-function myMap() {
-    var mapProp = {
-        center: new google.maps.LatLng(51.508742, -0.120850),
-        zoom: 5,
-        
-    };
-    var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
-}
-
-/************************************************************************************/
 function theMap() {
     const map = new google.maps.Map(document.getElementById("googleMap"), {
         zoom: 4,
-        center: { lat: -25.363882, lng: 131.044922 }
-      });
+        center: {
+            lat: -25.363882,
+            lng: 131.044922
+        }
+    });
     return map;
 }
+
+/**************************************************************************/
 function myMap() {
-    let count = 0; 
+    let count = 0;
     let map = theMap();
     map.addListener("click", e => {
-      count = count + 1;
-      if(count <= 1){
-      placeMarkerAndPanTo(e.latLng, map);
-    }else{
-        myMap();
-    }
+        count = count + 1;
+        if (count <= 1) {
+            placeMarkerAndPanTo(e.latLng, map);
+        } else {
+            myMap();
+        }
     });
-  }
-  
-  function placeMarkerAndPanTo(latLng, map) {
-      
+}
+
+/**************************************************************************/
+
+function placeMarkerAndPanTo(latLng, map) {
+
     new google.maps.Marker({
-      position: latLng,
-      map: map
+        position: latLng,
+        map: map
     });
     map.panTo(latLng);
-    
+
     let lat = latLng.lat();
     let long = latLng.lng();
-    guessPoint = {lat: lat, lng: long };
- 
-  }
+    guessPoint = {
+        lat: lat,
+        lng: long
+    };
 
-  function submitGuess(){
+}
+
+/**************************************************************************/
+
+function haversine_distance(mk1, mk2) {
+    var R = 3958.8; // Radius of the Earth in miles
+    var rlat1 = mk1.position.lat() * (Math.PI / 180); // Convert degrees to radians
+    var rlat2 = mk2.position.lat() * (Math.PI / 180); // Convert degrees to radians
+    var difflat = rlat2 - rlat1; // Radian difference (latitudes)
+    var difflon = (mk2.position.lng() - mk1.position.lng()) * (Math.PI / 180); // Radian difference (longitudes)
+
+    var d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat / 2) * Math.sin(difflat / 2) + Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon / 2) * Math.sin(difflon / 2)));
+    return d;
+}
+
+/**************************************************************************/
+function submitGuess() {
     let map = theMap();
-    
-    if(typeof actualPoint !== 'undefined'){
-    var mk1 = new google.maps.Marker({position: actualPoint, map: map});
-    //var mk2 = new google.maps.Marker({position: guessPoint, map: map});
-    var line = new google.maps.Polyline({path: [actualPoint, guessPoint], map: map});
-    }else{
-       myMap();
-    }
-  }
- 
 
-async function city () {
+    if (typeof actualPoint !== 'undefined') {
+        var mk1 = new google.maps.Marker({
+            position: actualPoint,
+            map: map
+        });
+        var mk2 = new google.maps.Marker({
+            position: guessPoint,
+            map: map
+        });
+        var distM = haversine_distance(mk1, mk2);
+        var distKm = distM * 1.60934;
+        document.getElementById("distance").innerHTML = distKm;
+        var line = new google.maps.Polyline({
+            path: [actualPoint, guessPoint],
+            map: map
+        });
+    } else {
+        myMap();
+    }
+}
+
+/**************************************************************************/
+
+async function city() {
     let total = 245;
     const where = encodeURIComponent(JSON.stringify({
         "capital": {
@@ -163,8 +180,10 @@ async function city () {
     var numb = Math.floor(Math.random() * total);
     if (typeof data.results[numb].capital !== 'undefined') {
 
-        imageGame( data.results[numb].capital );
+        imageGame(data.results[numb].capital);
     }
 
 
 };
+
+/**************************************************************************/
