@@ -86,3 +86,16 @@ li {
 }
 
 .photoBody {    display: flex;    overflow-x: auto;}
+
+.block {
+    display: block;
+    width: 100%;
+    border: none;
+    background-color: #3b305e;
+    padding: 14px 28px;
+    font-size: 16px;
+    cursor: pointer;
+    text-align: center;
+    color: white;
+    font-weight: bold;
+  }

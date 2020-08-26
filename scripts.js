@@ -77,10 +77,10 @@ var imageGame = function (text) {
 
 function theMap() {
     const map = new google.maps.Map(document.getElementById("googleMap"), {
-        zoom: 4,
+        zoom: 2.7,
         center: {
-            lat: -25.363882,
-            lng: 131.044922
+            lat: 20,
+            lng: 10
         }
     });
     return map;
