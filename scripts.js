@@ -2,12 +2,13 @@ let guessPoint;
 let actualPoint;
 let markers = [];
 let count;
-
+let cityArray = [];
 let photosHeight;
 let photosHtml;
 let photosReference;
 let photosWidth;
 let placeId;
+let timesPlayed = 0;
 
 /**************************************************************************/
 var reloadQuote = function () {
@@ -27,10 +28,29 @@ var paragraphDescription = document.getElementById('paragraphDescription');
 var playAgain = document.getElementById('playAgain');
 playAgain.style.display = 'none';
 var play = document.getElementById('play');
+var gallery = document.getElementById('gallery');
+var distanceDisplay = document.getElementById('distance');
+
 
 
 /**************************************************************************/
 var imageGame = function (text) {
+    
+    //console.log(timesPlaye
+    timesPlayed++;
+    console.log(timesPlayed);
+    
+    /*if (timesPlayed >2){
+        gallery.style.display = 'none';
+        play.style.display = 'block';
+        playAgain.style.display = 'none';
+        submitButton.style.display = 'none';
+        googleMap.style.display = 'none';
+        //paragraphDescription.style.display = 'none';
+        //distanceDisplay.style.display = 'none';
+        return;}
+    */
+
     myMap();
     play.style.display = 'none';
     playAgain.style.display = 'none';
@@ -193,34 +213,46 @@ function submitGuess() {
     } else {
         myMap();
     }
+
+    
 }
 
 
 /**************************************************************************/
 
 async function city() {
-    let total = 245;
+
+    let total = 500;
     const where = encodeURIComponent(JSON.stringify({
-        "capital": {
-            "$exists": true
+        "population": {
+          "$gte": 750000
+        },
+        "name": {
+          "$exists": true
         }
-    }));
-    const response = await fetch(
-        `https://parseapi.back4app.com/classes/Continentscountriescities_Country?limit=${total}&order=emoji&excludeKeys=emoji,phone,currency,shape&where=${where}`, {
-            headers: {
-                'X-Parse-Application-Id': 'g5GddGZX5VkbEL3fuVL1HGrvY8k7BkzcOCAK0UFA', // This is your app's application id
-                'X-Parse-REST-API-Key': 'FrSe7oACe16OuMzNGPaDV3np6tzIpl3AZwVgACEG', // This is your app's REST API key
-            }
+      }));
+
+      const response = await fetch(
+        `https://parseapi.back4app.com/classes/Continentscountriescities_City?limit=${total}&where=${where}`,
+        {
+          headers: {
+            'X-Parse-Application-Id': 'HJfJB7lN31lPNqinprcyGadSouGfk82CWZp36FTh', // This is your app's application id
+            'X-Parse-REST-API-Key': 'L79QejO3vPvlM4Vyzw88qDIgZSRUQfXjoPf6WSh2', // This is your app's REST API key
+          }
         }
-    );
+      );
+      const data = await response.json(); // Here you have the data that you need
+      
 
-    const data = await response.json();
-
+  //  console.log(data);
     var numb = Math.floor(Math.random() * total);
-    if (typeof data.results[numb].capital !== 'undefined') {
-
-        imageGame(data.results[numb].capital);
-    }
+   if (typeof data.results[numb] !== 'undefined') {
+       if (!(cityArray.includes(data.results[numb].name))){
+        cityArray.push(data.results[numb].name);
+        console.log(cityArray);
+        imageGame(data.results[numb].name);}
+    else{city();}
+   }
 
 
 };

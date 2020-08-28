@@ -4,11 +4,13 @@ var guessPoint;
 var actualPoint;
 var markers = [];
 var count;
+var cityArray = [];
 var photosHeight;
 var photosHtml;
 var photosReference;
 var photosWidth;
 var placeId;
+var timesPlayed = 0;
 /**************************************************************************/
 
 var reloadQuote = function reloadQuote() {
@@ -29,9 +31,25 @@ var paragraphDescription = document.getElementById('paragraphDescription');
 var playAgain = document.getElementById('playAgain');
 playAgain.style.display = 'none';
 var play = document.getElementById('play');
+var gallery = document.getElementById('gallery');
+var distanceDisplay = document.getElementById('distance');
 /**************************************************************************/
 
 var imageGame = function imageGame(text) {
+  //console.log(timesPlaye
+  timesPlayed++;
+  console.log(timesPlayed);
+  /*if (timesPlayed >2){
+      gallery.style.display = 'none';
+      play.style.display = 'block';
+      playAgain.style.display = 'none';
+      submitButton.style.display = 'none';
+      googleMap.style.display = 'none';
+      //paragraphDescription.style.display = 'none';
+      //distanceDisplay.style.display = 'none';
+      return;}
+  */
+
   myMap();
   play.style.display = 'none';
   playAgain.style.display = 'none';
@@ -192,18 +210,21 @@ function city() {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          total = 245;
+          total = 500;
           where = encodeURIComponent(JSON.stringify({
-            "capital": {
+            "population": {
+              "$gte": 750000
+            },
+            "name": {
               "$exists": true
             }
           }));
           _context.next = 4;
-          return regeneratorRuntime.awrap(fetch("https://parseapi.back4app.com/classes/Continentscountriescities_Country?limit=".concat(total, "&order=emoji&excludeKeys=emoji,phone,currency,shape&where=").concat(where), {
+          return regeneratorRuntime.awrap(fetch("https://parseapi.back4app.com/classes/Continentscountriescities_City?limit=".concat(total, "&where=").concat(where), {
             headers: {
-              'X-Parse-Application-Id': 'g5GddGZX5VkbEL3fuVL1HGrvY8k7BkzcOCAK0UFA',
+              'X-Parse-Application-Id': 'HJfJB7lN31lPNqinprcyGadSouGfk82CWZp36FTh',
               // This is your app's application id
-              'X-Parse-REST-API-Key': 'FrSe7oACe16OuMzNGPaDV3np6tzIpl3AZwVgACEG' // This is your app's REST API key
+              'X-Parse-REST-API-Key': 'L79QejO3vPvlM4Vyzw88qDIgZSRUQfXjoPf6WSh2' // This is your app's REST API key
 
             }
           }));
@@ -215,10 +236,18 @@ function city() {
 
         case 7:
           data = _context.sent;
+          // Here you have the data that you need
+          //  console.log(data);
           numb = Math.floor(Math.random() * total);
 
-          if (typeof data.results[numb].capital !== 'undefined') {
-            imageGame(data.results[numb].capital);
+          if (typeof data.results[numb] !== 'undefined') {
+            if (!cityArray.includes(data.results[numb].name)) {
+              cityArray.push(data.results[numb].name);
+              console.log(cityArray);
+              imageGame(data.results[numb].name);
+            } else {
+              city();
+            }
           }
 
         case 10:
