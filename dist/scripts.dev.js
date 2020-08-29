@@ -3,15 +3,23 @@
 //Map Variables 
 var actualPoint;
 var guessPoint;
-var markers = []; //API Calls
+var markers = [];
+var map = new google.maps.Map(document.getElementById("googleMap"), {
+  zoom: 2.7,
+  center: {
+    lat: 20,
+    lng: 10
+  }
+}); //API Calls
 
 var placeId;
 var key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM';
 var proxyUrl = "https://cors-anywhere.herokuapp.com/";
 var photoArray = []; //Verification
 
-var clickMarkerCount;
-var cityArray = []; //DOM Element Calls
+var markerClickCount;
+var cityArray = [];
+var initialLoad = 0; //DOM Element Calls
 
 var submitButton = document.getElementById('submitButton');
 var playAgain = document.getElementById('playAgain');
@@ -36,43 +44,45 @@ var randomNumberGenerator = function randomNumberGenerator(maxRange) {
 
 
 var imageGame = function imageGame(text) {
+  initialLoad++;
   playAgain.style.display = 'none';
   submitButton.style.display = 'block';
-  myMap();
   var queryUrl = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=".concat(text, "&inputtype=textquery&fields=photos,geometry,place_id,type,formatted_address,name,opening_hours,rating&key=").concat(key);
   fetch(proxyUrl + queryUrl).then(function (response) {
     return response.json();
   }).then(function (data) {
-    var photosObject = data.candidates[0].photos[0];
     placeId = data.candidates[0].place_id;
-  }).then(function (data) {
-    var imgUrl = "https://maps.googleapis.com/maps/api/place/details/json?place_id=".concat(placeId, "&fields=geometry,plus_code,photo,name,rating&key=").concat(key);
-    imageScroll(imgUrl);
+    imageScroll(placeId);
   });
+
+  if (initialLoad > 1) {
+    map = reloadMap();
+  }
+
+  myMap();
 }; //Generates images and outputs to HTML 
 
 
-var imageScroll = function imageScroll(imgUrl) {
+var imageScroll = function imageScroll(placeId) {
+  var imgUrl = "https://maps.googleapis.com/maps/api/place/details/json?place_id=".concat(placeId, "&fields=geometry,plus_code,photo,name,rating&key=").concat(key);
   fetch(proxyUrl + imgUrl).then(function (response) {
     return response.json();
   }).then(function (data) {
     actualPoint = data.result.geometry.location;
     photoArray = data.result.photos;
-    var totalText1 = "";
+    var listImageTags = " ";
 
     for (var index = 0; index < photoArray.length; index++) {
       var reference = photoArray[index].photo_reference;
-      totalText1 += '<img src = ';
-      totalText1 += "https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photoreference=".concat(reference, "&key=").concat(key);
-      totalText1 += " id=cd alt=maps width=\"600\" height=\"500\"></img>";
-      totalText1 += "    ";
-      document.getElementById("photo").innerHTML = totalText1;
+      listImageTags += " <img src = https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photoreference=".concat(reference, "&key=").concat(key, " id=cd alt=maps width=\"600\" height=\"500\"></img>    ");
     }
+
+    document.getElementById("photo").innerHTML = listImageTags;
   });
 }; //Defining the Google Map
 
 
-var theMap = function theMap() {
+var reloadMap = function reloadMap() {
   var map = new google.maps.Map(document.getElementById("googleMap"), {
     zoom: 2.7,
     center: {
@@ -86,7 +96,6 @@ var theMap = function theMap() {
 
 var myMap = function myMap() {
   markerClickCount = 0;
-  var map = theMap();
   map.addListener("click", function (e) {
     markerClickCount++;
     placeMarkerAndPanTo(e.latLng, map);
@@ -108,7 +117,7 @@ var placeMarkerAndPanTo = function placeMarkerAndPanTo(latLng, map) {
   });
 
   if (markerClickCount > 1) {
-    setMapOnAll(null);
+    setMapOnAll();
   }
 
   markers.push(marker);
@@ -127,15 +136,15 @@ var placeMarkerAndPanTo = function placeMarkerAndPanTo(latLng, map) {
 var haversineDistance = function haversineDistance(mk1, mk2) {
   var R = 3958.8; // Radius of the Earth in miles
 
-  var rlat1 = mk1.position.lat() * (Math.PI / 180); // Convert degrees to radians
+  var rLat1 = mk1.position.lat() * (Math.PI / 180); // Convert degrees to radians
 
-  var rlat2 = mk2.position.lat() * (Math.PI / 180); // Convert degrees to radians
+  var rLat2 = mk2.position.lat() * (Math.PI / 180); // Convert degrees to radians
 
-  var difflat = rlat2 - rlat1; // Radian difference (latitudes)
+  var diffLat = rLat2 - rLat1; // Radian difference (latitudes)
 
-  var difflon = (mk2.position.lng() - mk1.position.lng()) * (Math.PI / 180); // Radian difference (longitudes)
+  var diffLon = (mk2.position.lng() - mk1.position.lng()) * (Math.PI / 180); // Radian difference (longitudes)
 
-  var dist = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat / 2) * Math.sin(difflat / 2) + Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon / 2) * Math.sin(difflon / 2)));
+  var dist = 2 * R * Math.asin(Math.sqrt(Math.sin(diffLat / 2) * Math.sin(diffLat / 2) + Math.cos(rLat1) * Math.cos(rLat2) * Math.sin(diffLon / 2) * Math.sin(diffLon / 2)));
   return dist;
 }; //Generate new game after the submit button is clicked
 
@@ -143,7 +152,6 @@ var haversineDistance = function haversineDistance(mk1, mk2) {
 var submitGuess = function submitGuess() {
   submitButton.style.display = 'none';
   playAgain.style.display = 'block';
-  var map = theMap();
 
   if (typeof actualPoint !== 'undefined') {
     var mk1 = new google.maps.Marker({
@@ -162,19 +170,19 @@ var submitGuess = function submitGuess() {
       map: map
     });
   } else {
-    myMap();
+    map = reloadMap();
   }
 }; //Call api and generate a city name
 
 
 var city = function city() {
-  var total, where, response, data, numb;
+  var total, paramAPI, response, data, numb;
   return regeneratorRuntime.async(function city$(_context) {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
           total = 500;
-          where = encodeURIComponent(JSON.stringify({
+          paramAPI = encodeURIComponent(JSON.stringify({
             "population": {
               "$gte": 750000
             },
@@ -183,12 +191,10 @@ var city = function city() {
             }
           }));
           _context.next = 4;
-          return regeneratorRuntime.awrap(fetch("https://parseapi.back4app.com/classes/Continentscountriescities_City?limit=".concat(total, "&where=").concat(where), {
+          return regeneratorRuntime.awrap(fetch("https://parseapi.back4app.com/classes/Continentscountriescities_City?limit=".concat(total, "&where=").concat(paramAPI), {
             headers: {
               'X-Parse-Application-Id': 'HJfJB7lN31lPNqinprcyGadSouGfk82CWZp36FTh',
-              // This is your app's application id
-              'X-Parse-REST-API-Key': 'L79QejO3vPvlM4Vyzw88qDIgZSRUQfXjoPf6WSh2' // This is your app's REST API key
-
+              'X-Parse-REST-API-Key': 'L79QejO3vPvlM4Vyzw88qDIgZSRUQfXjoPf6WSh2'
             }
           }));
 
@@ -199,7 +205,6 @@ var city = function city() {
 
         case 7:
           data = _context.sent;
-          // Here you have the data that you need
           numb = randomNumberGenerator(total);
 
           if (typeof data.results[numb] !== 'undefined') {

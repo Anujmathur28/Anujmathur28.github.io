@@ -2,6 +2,13 @@
 let actualPoint;
 let guessPoint;
 let markers = [];
+let map = new google.maps.Map(document.getElementById("googleMap"), {
+    zoom: 2.7,
+    center: {
+        lat: 20,
+        lng: 10
+    }
+});
 
 //API Calls
 let placeId;
@@ -10,8 +17,9 @@ const proxyUrl = "https://cors-anywhere.herokuapp.com/";
 let photoArray = [];
 
 //Verification
-let clickMarkerCount;
+let markerClickCount;
 let cityArray = [];
+let initialLoad = 0;
 
 //DOM Element Calls
 let submitButton = document.getElementById('submitButton');
@@ -39,28 +47,30 @@ let randomNumberGenerator = function (maxRange) {
 
 //Main function to run the game
 let imageGame = function (text) {
-
+    initialLoad ++;
     playAgain.style.display = 'none';
     submitButton.style.display = 'block';
 
-    myMap();
     const queryUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${text}&inputtype=textquery&fields=photos,geometry,place_id,type,formatted_address,name,opening_hours,rating&key=${key}`;
 
     fetch(proxyUrl + queryUrl).then(function (response) {
-            return response.json();
-        }).then(function (data) {
-            let photosObject = data.candidates[0].photos[0];
-            placeId = data.candidates[0].place_id;
-        })
-        .then(function (data) {
-            let imgUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=geometry,plus_code,photo,name,rating&key=${key}`;
-            imageScroll(imgUrl);
-
-        });
+        return response.json();
+    }).then(function (data) {
+        placeId = data.candidates[0].place_id;
+        imageScroll(placeId);
+    });
+    if(initialLoad >1){
+    map = reloadMap();
+    }
+    myMap();
+    
 }
 
 //Generates images and outputs to HTML 
-let imageScroll = function (imgUrl) {
+let imageScroll = function (placeId) {
+
+    let imgUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=geometry,plus_code,photo,name,rating&key=${key}`;
+
     fetch(proxyUrl + imgUrl).then(function (response) {
         return response.json();
 
@@ -68,23 +78,17 @@ let imageScroll = function (imgUrl) {
 
         actualPoint = data.result.geometry.location;
         photoArray = data.result.photos;
-        let totalText1 = "";
+        let listImageTags = " ";
         for (let index = 0; index < photoArray.length; index++) {
             let reference = photoArray[index].photo_reference;
-
-            totalText1 += '<img src = ';
-            totalText1 += `https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photoreference=${reference}&key=${key}`;
-            totalText1 += ` id=cd alt=maps width="600" height="500"></img>`;
-            totalText1 += "    ";
-
-            document.getElementById("photo").innerHTML = totalText1;
-
+            listImageTags += ` <img src = https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photoreference=${reference}&key=${key} id=cd alt=maps width="600" height="500"></img>    `;
         }
+        document.getElementById("photo").innerHTML = listImageTags;
     });
 }
 
 //Defining the Google Map
-let theMap = function () {
+let reloadMap = function () {
     const map = new google.maps.Map(document.getElementById("googleMap"), {
         zoom: 2.7,
         center: {
@@ -93,12 +97,11 @@ let theMap = function () {
         }
     });
     return map;
-}
+} 
 
 //Instance of theMap for Interacting
 let myMap = function () {
     markerClickCount = 0;
-    let map = theMap();
     map.addListener("click", e => {
         markerClickCount++;
         placeMarkerAndPanTo(e.latLng, map);
@@ -120,7 +123,7 @@ let placeMarkerAndPanTo = function (latLng, map) {
         map: map
     });
     if (markerClickCount > 1) {
-        setMapOnAll(null);
+        setMapOnAll();
     }
 
     markers.push(marker);
@@ -137,13 +140,12 @@ let placeMarkerAndPanTo = function (latLng, map) {
 
 //Used to calculate distances between two coordinate points on a sphere
 let haversineDistance = function (mk1, mk2) {
-    let R = 3958.8; // Radius of the Earth in miles
-    let rlat1 = mk1.position.lat() * (Math.PI / 180); // Convert degrees to radians
-    let rlat2 = mk2.position.lat() * (Math.PI / 180); // Convert degrees to radians
-    let difflat = rlat2 - rlat1; // Radian difference (latitudes)
-    let difflon = (mk2.position.lng() - mk1.position.lng()) * (Math.PI / 180); // Radian difference (longitudes)
-
-    let dist = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat / 2) * Math.sin(difflat / 2) + Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon / 2) * Math.sin(difflon / 2)));
+    const R = 3958.8; // Radius of the Earth in miles
+    const rLat1 = mk1.position.lat() * (Math.PI / 180); // Convert degrees to radians
+    const rLat2 = mk2.position.lat() * (Math.PI / 180); // Convert degrees to radians
+    const diffLat = rLat2 - rLat1; // Radian difference (latitudes)
+    const diffLon = (mk2.position.lng() - mk1.position.lng()) * (Math.PI / 180); // Radian difference (longitudes)
+    const dist = 2 * R * Math.asin(Math.sqrt(Math.sin(diffLat / 2) * Math.sin(diffLat / 2) + Math.cos(rLat1) * Math.cos(rLat2) * Math.sin(diffLon / 2) * Math.sin(diffLon / 2)));
     return dist;
 }
 
@@ -151,7 +153,6 @@ let haversineDistance = function (mk1, mk2) {
 let submitGuess = function () {
     submitButton.style.display = 'none';
     playAgain.style.display = 'block';
-    let map = theMap();
 
     if (typeof actualPoint !== 'undefined') {
 
@@ -174,17 +175,16 @@ let submitGuess = function () {
 
 
     } else {
-        myMap();
+        map = reloadMap();
     }
-
-
 }
 
 //Call api and generate a city name
 let city = async function () {
 
     let total = 500;
-    const where = encodeURIComponent(JSON.stringify({
+
+    const paramAPI = encodeURIComponent(JSON.stringify({
         "population": {
             "$gte": 750000
         },
@@ -194,15 +194,15 @@ let city = async function () {
     }));
 
     const response = await fetch(
-        `https://parseapi.back4app.com/classes/Continentscountriescities_City?limit=${total}&where=${where}`, {
+        `https://parseapi.back4app.com/classes/Continentscountriescities_City?limit=${total}&where=${paramAPI}`, {
             headers: {
-                'X-Parse-Application-Id': 'HJfJB7lN31lPNqinprcyGadSouGfk82CWZp36FTh', // This is your app's application id
-                'X-Parse-REST-API-Key': 'L79QejO3vPvlM4Vyzw88qDIgZSRUQfXjoPf6WSh2', // This is your app's REST API key
+                'X-Parse-Application-Id': 'HJfJB7lN31lPNqinprcyGadSouGfk82CWZp36FTh',
+                'X-Parse-REST-API-Key': 'L79QejO3vPvlM4Vyzw88qDIgZSRUQfXjoPf6WSh2',
             }
         }
     );
-    const data = await response.json(); // Here you have the data that you need
 
+    const data = await response.json();
 
     let numb = randomNumberGenerator(total);
     if (typeof data.results[numb] !== 'undefined') {
