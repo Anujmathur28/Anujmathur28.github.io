@@ -28,17 +28,6 @@ let distanceDisplay = document.getElementById('distance');
 
 playAgain.style.display = 'none';
 
-//Display quotes on main page
-let reloadQuote = function () {
-    let numberQuote = randomNumberGenerator(1643);
-    fetch("https://type.fit/api/quotes").then(function (response) {
-        return response.json();
-    }).then(function (data) {
-        document.getElementById("quotes").innerHTML = data[numberQuote].text;
-        document.getElementById("author").innerHTML = data[numberQuote].author;
-    });
-}
-
 //Generates Random numbers given the range
 let randomNumberGenerator = function (maxRange) {
     let numbGenerated = Math.floor(Math.random() * maxRange);
@@ -182,7 +171,7 @@ let submitGuess = function () {
 //Call api and generate a city name
 let city = async function () {
 
-    let total = 500;
+    let total = 1000;
 
     const paramAPI = encodeURIComponent(JSON.stringify({
         "population": {
