@@ -1,37 +1,43 @@
 "use strict";
 
-var guessPoint;
+//Map Variables 
 var actualPoint;
-var count;
-var photosHeight;
-var photosHtml;
-var photosReference;
-var photosWidth;
+var guessPoint;
+var markers = []; //API Calls
+
 var placeId;
-var photoArray;
-var markers = [];
-var cityArray = [];
+var key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM';
+var proxyUrl = "https://cors-anywhere.herokuapp.com/";
+var photoArray = []; //Verification
+
+var clickMarkerCount;
+var cityArray = []; //DOM Element Calls
+
 var submitButton = document.getElementById('submitButton');
 var playAgain = document.getElementById('playAgain');
 var distanceDisplay = document.getElementById('distance');
-var key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM';
-var proxyUrl = "https://cors-anywhere.herokuapp.com/";
-playAgain.style.display = 'none';
-/**************************************************************************/
+playAgain.style.display = 'none'; //Display quotes on main page
 
 var reloadQuote = function reloadQuote() {
-  var numb = Math.floor(Math.random() * 1643);
+  var numberQuote = randomNumberGenerator(1643);
   fetch("https://type.fit/api/quotes").then(function (response) {
     return response.json();
   }).then(function (data) {
-    document.getElementById("quotes").innerHTML = data[numb].text;
-    document.getElementById("author").innerHTML = data[numb].author;
+    document.getElementById("quotes").innerHTML = data[numberQuote].text;
+    document.getElementById("author").innerHTML = data[numberQuote].author;
   });
-};
-/**************************************************************************/
+}; //Generates Random numbers given the range
+
+
+var randomNumberGenerator = function randomNumberGenerator(maxRange) {
+  var numbGenerated = Math.floor(Math.random() * maxRange);
+  return numbGenerated;
+}; //Main function to run the game
 
 
 var imageGame = function imageGame(text) {
+  playAgain.style.display = 'none';
+  submitButton.style.display = 'block';
   myMap();
   var queryUrl = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=".concat(text, "&inputtype=textquery&fields=photos,geometry,place_id,type,formatted_address,name,opening_hours,rating&key=").concat(key);
   fetch(proxyUrl + queryUrl).then(function (response) {
@@ -43,11 +49,10 @@ var imageGame = function imageGame(text) {
     var imgUrl = "https://maps.googleapis.com/maps/api/place/details/json?place_id=".concat(placeId, "&fields=geometry,plus_code,photo,name,rating&key=").concat(key);
     imageScroll(imgUrl);
   });
-};
-/**************************************************************************/
+}; //Generates images and outputs to HTML 
 
 
-function imageScroll(imgUrl) {
+var imageScroll = function imageScroll(imgUrl) {
   fetch(proxyUrl + imgUrl).then(function (response) {
     return response.json();
   }).then(function (data) {
@@ -64,9 +69,10 @@ function imageScroll(imgUrl) {
       document.getElementById("photo").innerHTML = totalText1;
     }
   });
-}
+}; //Defining the Google Map
 
-function theMap() {
+
+var theMap = function theMap() {
   var map = new google.maps.Map(document.getElementById("googleMap"), {
     zoom: 2.7,
     center: {
@@ -75,42 +81,34 @@ function theMap() {
     }
   });
   return map;
-}
-/**************************************************************************/
+}; //Instance of theMap for Interacting
 
 
-function myMap() {
-  count = 0;
-  var map = theMap(); // var marker = new google.maps.Marker({
-  //   map:map
-  //});
-
+var myMap = function myMap() {
+  markerClickCount = 0;
+  var map = theMap();
   map.addListener("click", function (e) {
-    count++;
+    markerClickCount++;
     placeMarkerAndPanTo(e.latLng, map);
   });
-}
-/**************************************************************************/
+}; //Used to clear map markers
 
 
-function clearMarkers() {
-  setMapOnAll(null);
-}
-
-function setMapOnAll(map) {
+var setMapOnAll = function setMapOnAll(map) {
   for (var i = 0; i < markers.length; i++) {
     markers[i].setMap(map);
   }
-}
+}; //Place marker point
 
-function placeMarkerAndPanTo(latLng, map) {
+
+var placeMarkerAndPanTo = function placeMarkerAndPanTo(latLng, map) {
   var marker = new google.maps.Marker({
     position: latLng,
     map: map
   });
 
-  if (count > 1) {
-    clearMarkers();
+  if (markerClickCount > 1) {
+    setMapOnAll(null);
   }
 
   markers.push(marker);
@@ -123,11 +121,10 @@ function placeMarkerAndPanTo(latLng, map) {
     lat: lat,
     lng: _long
   };
-}
-/**************************************************************************/
+}; //Used to calculate distances between two coordinate points on a sphere
 
 
-function haversine_distance(mk1, mk2) {
+var haversineDistance = function haversineDistance(mk1, mk2) {
   var R = 3958.8; // Radius of the Earth in miles
 
   var rlat1 = mk1.position.lat() * (Math.PI / 180); // Convert degrees to radians
@@ -138,13 +135,12 @@ function haversine_distance(mk1, mk2) {
 
   var difflon = (mk2.position.lng() - mk1.position.lng()) * (Math.PI / 180); // Radian difference (longitudes)
 
-  var d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat / 2) * Math.sin(difflat / 2) + Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon / 2) * Math.sin(difflon / 2)));
-  return d;
-}
-/**************************************************************************/
+  var dist = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat / 2) * Math.sin(difflat / 2) + Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon / 2) * Math.sin(difflon / 2)));
+  return dist;
+}; //Generate new game after the submit button is clicked
 
 
-function submitGuess() {
+var submitGuess = function submitGuess() {
   submitButton.style.display = 'none';
   playAgain.style.display = 'block';
   var map = theMap();
@@ -158,7 +154,7 @@ function submitGuess() {
       position: guessPoint,
       map: map
     });
-    var distM = haversine_distance(mk1, mk2);
+    var distM = haversineDistance(mk1, mk2);
     var distKm = distM * 1.60934;
     document.getElementById("distance").innerHTML = distKm;
     var line = new google.maps.Polyline({
@@ -168,11 +164,10 @@ function submitGuess() {
   } else {
     myMap();
   }
-}
-/**************************************************************************/
+}; //Call api and generate a city name
 
 
-function city() {
+var city = function city() {
   var total, where, response, data, numb;
   return regeneratorRuntime.async(function city$(_context) {
     while (1) {
@@ -205,13 +200,11 @@ function city() {
         case 7:
           data = _context.sent;
           // Here you have the data that you need
-          //  console.log(data);
-          numb = Math.floor(Math.random() * total);
+          numb = randomNumberGenerator(total);
 
           if (typeof data.results[numb] !== 'undefined') {
             if (!cityArray.includes(data.results[numb].name)) {
               cityArray.push(data.results[numb].name);
-              console.log(cityArray);
               imageGame(data.results[numb].name);
             } else {
               city();
@@ -224,13 +217,11 @@ function city() {
       }
     }
   });
-}
+}; //JQuery function to disable right clicks
 
-;
 
 (function ($) {
   $(document).on('contextmenu', 'img', function () {
     return false;
   });
 })(jQuery);
-/**************************************************************************/
