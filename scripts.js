@@ -1,14 +1,22 @@
 let guessPoint;
 let actualPoint;
-let markers = [];
 let count;
-let cityArray = [];
 let photosHeight;
 let photosHtml;
 let photosReference;
 let photosWidth;
 let placeId;
-let timesPlayed = 0;
+let photoArray;
+let markers = [];
+let cityArray = [];
+let submitButton = document.getElementById('submitButton');
+let playAgain = document.getElementById('playAgain');
+let distanceDisplay = document.getElementById('distance');
+const key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM';
+const proxyUrl = "https://cors-anywhere.herokuapp.com/";
+    
+
+playAgain.style.display = 'none';
 
 /**************************************************************************/
 var reloadQuote = function () {
@@ -20,97 +28,49 @@ var reloadQuote = function () {
         document.getElementById("author").innerHTML = data[numb].author;
     });
 }
-var submitButton = document.getElementById('submitButton');
-submitButton.style.display = 'none';
-var googleMap = document.getElementById('googleMap');
-googleMap.style.display = 'none';
-var paragraphDescription = document.getElementById('paragraphDescription');
-var playAgain = document.getElementById('playAgain');
-playAgain.style.display = 'none';
-var play = document.getElementById('play');
-var gallery = document.getElementById('gallery');
-var distanceDisplay = document.getElementById('distance');
-
-
 
 /**************************************************************************/
 var imageGame = function (text) {
     
-    //console.log(timesPlaye
-    timesPlayed++;
-    console.log(timesPlayed);
-    
-    /*if (timesPlayed >2){
-        gallery.style.display = 'none';
-        play.style.display = 'block';
-        playAgain.style.display = 'none';
-        submitButton.style.display = 'none';
-        googleMap.style.display = 'none';
-        //paragraphDescription.style.display = 'none';
-        //distanceDisplay.style.display = 'none';
-        return;}
-    */
-
     myMap();
-    play.style.display = 'none';
-    playAgain.style.display = 'none';
-    submitButton.style.display = 'block';
-    googleMap.style.display = 'block';
-    paragraphDescription.style.display = 'none';
-
-
-    const key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM';
-    // const inputText = document.getElementById("searchTextField").value;
-    const inputText = text;
-    //console.log(inputText);
-    const proxyUrl = "https://cors-anywhere.herokuapp.com/";
-    let queryUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${inputText}&inputtype=textquery&fields=photos,geometry,place_id,type,formatted_address,name,opening_hours,rating&key=${key}`;
+    const queryUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${text}&inputtype=textquery&fields=photos,geometry,place_id,type,formatted_address,name,opening_hours,rating&key=${key}`;
 
     fetch(proxyUrl + queryUrl).then(function (response) {
             return response.json();
         }).then(function (data) {
             var photosObject = data.candidates[0].photos[0];
             placeId = data.candidates[0].place_id;
-            photosHeight = photosObject.height;
-            photosHtml = photosObject.html_attributions;
-            photosReference = photosObject.photo_reference;
-            photosWidth = photosObject.width;
         })
         .then(function (data) {
             let imgUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=geometry,plus_code,photo,name,rating&key=${key}`;
-
-            fetch(proxyUrl + imgUrl).then(function (response) {
-                return response.json();
-
-            }).then(function (data) {
-                actualPoint = data.result.geometry.location;
-
-                //let offset = 0;
-                let photoArray = data.result.photos;
-                let totalText1 = "";
-                for (let index = 0; index < photoArray.length; index++) {
-                    let reference = photoArray[index].photo_reference;
-                    // setTimeout(function () {
-                    totalText1 += '<img src = ';
-                    totalText1 += `https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photoreference=${reference}&key=${key}`;
-                    totalText1 += ` id=cd alt=maps width="600" height="500"></img>`;
-                    totalText1 += "    ";
-
-
-                    //<div class="container">    <img src="images/bhutan1.jpg" alt="Bhutan">    <img src="images/bhutan2.jpg" alt="Bhutan">    <img src="images/bhutan3.jpg" alt="Bhutan">    <img src="images/bhutan4.jpg" alt="Bhutan">    <img src="images/bhutan5.jpg" alt="Bhutan">    <img src="images/bhutan6.jpg" alt="Bhutan">    <img src="images/bhutan7.jpg" alt="Bhutan"></div>
-
-                    document.getElementById("photo").innerHTML = totalText1;
-
-
-                    //  }, 2000 + offset);
-                    // offset += 2000;
-                }
-
-            });
+            imageScroll(imgUrl);
+           
         });
 }
 
 /**************************************************************************/
+function imageScroll (imgUrl) {
+fetch(proxyUrl + imgUrl).then(function (response) {
+    return response.json();
+
+}).then(function (data) {
+
+    actualPoint = data.result.geometry.location;
+    photoArray = data.result.photos;
+    let totalText1 = "";
+    for (let index = 0; index < photoArray.length; index++) {
+        let reference = photoArray[index].photo_reference;
+        
+        totalText1 += '<img src = ';
+        totalText1 += `https://maps.googleapis.com/maps/api/place/photo?maxwidth=600&photoreference=${reference}&key=${key}`;
+        totalText1 += ` id=cd alt=maps width="600" height="500"></img>`;
+        totalText1 += "    ";
+
+        document.getElementById("photo").innerHTML = totalText1;
+
+    }
+});
+}
 
 function theMap() {
     const map = new google.maps.Map(document.getElementById("googleMap"), {
