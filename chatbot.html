@@ -4,8 +4,12 @@
 <head>
     <link rel="stylesheet" href="css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.9.0"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+        integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.0.1"> </script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@1.1.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@1.0.0"> </script>
+
     <title>Document</title>
 
 </head>
@@ -26,14 +30,49 @@
 </div>
 
 <body>
-    <div id="gallery " class="photoBody">
-        <pre id="l"></pre>
+
+    <style> 
+        .gallerys{
+            width: 200px;
+            height: 200px;
+            position: relative;
+            margin: 20px;
+        }
+        .box{
+            width: 100%;
+            height: 100%;            
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 100%;  
+        }
+        .stack-top{
+            z-index: 9;
+        }
+        .buttonUpload{
+            position: relative;
+        }
+        .textOut{
+            position: relative;
+        }
+    </style>
+
+    <div class="gallerys">
+        <div class="stack-top"><pre id="innerTag"> </pre></div>
+        <div class="box"><canvas id="gameCanvas" width="500" height="400"></canvas> </div> 
+        
+       <div class="buttonUpload"> <p><input type="file" accept="image/*" name="image" id="file" onchange="loadFile(event)" style="display: none;"></p>
+        <p><label for="file" style="cursor: pointer;">Upload Image</label></p>
+       </div>
+       <div class="textOut">
+        <h1>
+            <pre id="text"></pre>
+        </h1>
+        </div>
     </div>
 
-   <h1><pre id="text"></pre></h1>
 
-    <p><input type="file" accept="image/*" name="image" id="file" onchange="loadFile(event)" style="display: none;"></p>
-    <p><label for="file" style="cursor: pointer;">Upload Image</label></p>
+    
 
 </body>
 <script src="js/chatbot.js"></script>
