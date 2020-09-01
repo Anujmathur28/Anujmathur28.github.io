@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="css/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300&display=swap" rel="stylesheet">
+
+<!-- Load TensorFlow.js-->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.9.0"></script>
+<!-- Load the coco-ssd model. -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@1.1.0"></script>
+
+<!-- Replace this with your image. Make sure CORS settings allow reading the image! -->
+<img id="img" src="Birthday_Party.jpg" crossorigin='anonymous' width="500" height="400"/>
+
+<!-- Place your code in the script tag below. You can also use an external .js file -->
+<script>
+  // Notice there is no 'import' statement. 'cocoSsd' and 'tf' is
+  // available on the index-page because of the script tag above.
+
+  const img = document.getElementById('img');
+setTimeout(5000);
+  // Load the model.
+  cocoSsd.load().then(model => {
+    // detect objects in the image.
+    model.detect(img).then(predictions => {
+      console.log('Predictions: ', predictions);
+    });
+  });
+</script>
+
+    <title>Document</title>
+</head>
+
+<div class="header">
+    <nav>
+        <ul class="socialLeft">
+            <li><a href="index.html"><i class="fa fa-home"></i></a></li>
+            <li><a href="#"><i class="fa fa-google"></i></a></li>
+            <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+            <li><a href="#"><i class="fa fa-github"></i></a></li>
+        </ul>
+        <ul class="right">
+            <li><a href="#">About Me</a></li>
+            <li><a href="theFunZone.html">Fun Zone</a></li>
+        </ul>
+    </nav>
+</div>
+
+<body>
+   
+</body>
+<script src="js/chatbot.js"></script>

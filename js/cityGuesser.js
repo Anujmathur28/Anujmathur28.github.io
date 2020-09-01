@@ -192,6 +192,7 @@ let city = async function () {
     );
 
     const data = await response.json();
+    
 
     let numb = randomNumberGenerator(total);
     if (typeof data.results[numb] !== 'undefined') {
