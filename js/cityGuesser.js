@@ -48,9 +48,8 @@ let imageGame = function (text) {
         placeId = data.candidates[0].place_id;
         imageScroll(placeId);
     });
-    if(initialLoad >1){
+    
     map = reloadMap();
-    }
     myMap();
     
 }
@@ -199,6 +198,7 @@ let city = async function () {
         if (!(cityArray.includes(data.results[numb].name))) {
             cityArray.push(data.results[numb].name);
             imageGame(data.results[numb].name);
+            console.log(data.results[numb].name);
         } else {
             city();
         }

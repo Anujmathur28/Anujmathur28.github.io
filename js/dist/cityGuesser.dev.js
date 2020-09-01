@@ -43,11 +43,7 @@ var imageGame = function imageGame(text) {
     placeId = data.candidates[0].place_id;
     imageScroll(placeId);
   });
-
-  if (initialLoad > 1) {
-    map = reloadMap();
-  }
-
+  map = reloadMap();
   myMap();
 }; //Generates images and outputs to HTML 
 
@@ -200,6 +196,7 @@ var city = function city() {
             if (!cityArray.includes(data.results[numb].name)) {
               cityArray.push(data.results[numb].name);
               imageGame(data.results[numb].name);
+              console.log(data.results[numb].name);
             } else {
               city();
             }
