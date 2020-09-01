@@ -1,41 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <link rel="stylesheet" href="css/styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.9.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@1.1.0"></script>
 
-<!-- Load TensorFlow.js-->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.9.0"></script>
-<!-- Load the coco-ssd model. -->
-<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@1.1.0"></script>
+    <div id="gallery " class="photoBody">
+        <pre id="l"></pre>
+    </div>
 
-<!-- Replace this with your image. Make sure CORS settings allow reading the image! -->
-<img id="img" src="https://cors-anywhere.herokuapp.com/https://www.thespruce.com/thmb/Xf6yiW0Gnr3LOQRJh1oCi6QMkIg=/960x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/family-celebration-or-a-garden-party-outside-in-the-backyard--936816900-9e5c79750f0744ad92295aa351b53013.jpg" crossorigin='anonymous' width="500" height="400"/>
-<p><input type="file"  accept="image/*" name="image" id="file"  onchange="loadFile(event)" style="display: none;"></p>
-<p><label for="file" style="cursor: pointer;">Upload Image</label></p>
-<p><img id="output" width="200" /></p>
+    <p><input type="file" accept="image/*" name="image" id="file" onchange="loadFile(event)" style="display: none;"></p>
+    <p><label for="file" style="cursor: pointer;">Upload Image</label></p>
+    <p><img id="output" width="200" /></p>
 
-<script>
-var loadFile = function(event) {
-	var image = document.getElementById('output');
-	image.src = URL.createObjectURL(event.target.files[0]);
-};
-</script>
-<!-- Place your code in the script tag below. You can also use an external .js file -->
-<script>
-  // Notice there is no 'import' statement. 'cocoSsd' and 'tf' is
-  // available on the index-page because of the script tag above.
 
-  const img = document.getElementById('img');
-setTimeout(5000);
-  // Load the model.
-  cocoSsd.load().then(model => {
-    // detect objects in the image.
-    model.detect(img).then(predictions => {
-      console.log('Predictions: ', predictions);
-    });
-  });
-</script>
+    <script>
+        var loadFile = function (event) {
+            var image = document.getElementById('output');
+            image.src = URL.createObjectURL(event.target.files[0]);
+
+            let htmlTag =
+                `<img id="img" src="${image.src}" crossorigin='anonymous' width="500" height="400"/>`;
+            console.log(htmlTag);
+            document.getElementById("l").innerHTML = htmlTag;
+
+            const img = document.getElementById('img');
+            console.log(img);
+            // Load the model.
+            setTimeout(function () {
+                cocoSsd.load().then(model => {
+                    // detect objects in the image.
+                    model.detect(img).then(predictions => {
+                        console.log('Predictions: ', predictions);
+                    });
+                });
+            }, 1000);
+        };
+    </script>
+
 
     <title>Document</title>
 </head>
@@ -56,6 +60,6 @@ setTimeout(5000);
 </div>
 
 <body>
-   
+
 </body>
 <script src="js/chatbot.js"></script>
