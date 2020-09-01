@@ -26,3 +26,31 @@ let data = {"intents": [
   }
 ]
 };
+let textArray = "" ;
+
+var loadFile = function (event) {
+  var image = document.getElementById('file');
+  image.src = URL.createObjectURL(event.target.files[0]);
+
+  let htmlTag =
+      `<img id="img" src="${image.src}" crossorigin='anonymous' width="500" height="400"/>`;
+  console.log(htmlTag);
+  document.getElementById("l").innerHTML = htmlTag;
+
+  const img = document.getElementById('img');
+  console.log(img);
+  // Load the model.
+  setTimeout(function () {
+      cocoSsd.load().then(model => {
+          // detect objects in the image.
+          model.detect(img).then(predictions => {
+              console.log('Predictions: ', ); 
+              textArray = "Hmmm...I can only find: ";
+              for (let index = 0; index < predictions.length; index++) {
+                textArray += predictions[index].class + ", ";
+              }
+              document.getElementById("text").innerHTML = textArray;
+          });
+      });
+  }, 1000);
+};

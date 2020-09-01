@@ -28,3 +28,30 @@ var data = {
     "responses": ["We're open every day from 9am-9pm", "Our hours are 9am-9pm every day"]
   }]
 };
+var textArray = "";
+
+var loadFile = function loadFile(event) {
+  var image = document.getElementById('file');
+  image.src = URL.createObjectURL(event.target.files[0]);
+  var htmlTag = "<img id=\"img\" src=\"".concat(image.src, "\" crossorigin='anonymous' width=\"500\" height=\"400\"/>");
+  console.log(htmlTag);
+  document.getElementById("l").innerHTML = htmlTag;
+  var img = document.getElementById('img');
+  console.log(img); // Load the model.
+
+  setTimeout(function () {
+    cocoSsd.load().then(function (model) {
+      // detect objects in the image.
+      model.detect(img).then(function (predictions) {
+        console.log('Predictions: ');
+        textArray = "Hmmm...I can only find: ";
+
+        for (var index = 0; index < predictions.length; index++) {
+          textArray += predictions[index]["class"] + ", ";
+        }
+
+        document.getElementById("text").innerHTML = textArray;
+      });
+    });
+  }, 1000);
+};
