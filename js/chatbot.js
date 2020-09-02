@@ -9,7 +9,7 @@ var loadFile = function (event) {
   let image = document.getElementById('file');
   image.src = URL.createObjectURL(event.target.files[0]);
 
-  let htmlTag = `<img id="img" src="${image.src}" crossorigin='anonymous' width="500" height="400"/>`;
+  let htmlTag = `<img id="img" src="${image.src}" crossorigin='anonymous' width="1000" height="800"/>`;
   document.getElementById("innerTag").innerHTML = htmlTag;
 
   const img = document.getElementById('img');

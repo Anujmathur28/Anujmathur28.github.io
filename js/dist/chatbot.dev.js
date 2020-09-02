@@ -11,7 +11,7 @@ var loadFile = function loadFile(event) {
   context2.clearRect(0, 0, canvas.width, canvas.height);
   var image = document.getElementById('file');
   image.src = URL.createObjectURL(event.target.files[0]);
-  var htmlTag = "<img id=\"img\" src=\"".concat(image.src, "\" crossorigin='anonymous' width=\"500\" height=\"400\"/>");
+  var htmlTag = "<img id=\"img\" src=\"".concat(image.src, "\" crossorigin='anonymous' width=\"1000\" height=\"800\"/>");
   document.getElementById("innerTag").innerHTML = htmlTag;
   var img = document.getElementById('img');
   cocoSsd.load().then(function (model) {
