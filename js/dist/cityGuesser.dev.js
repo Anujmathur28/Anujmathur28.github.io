@@ -15,15 +15,16 @@ var map = new google.maps.Map(document.getElementById("googleMap"), {
 var placeId;
 var key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM';
 var proxyUrl = "https://cors-anywhere.herokuapp.com/";
-var photoArray = []; //Verification
+var photoArray = [];
+var cityName; //Verification
 
 var markerClickCount;
-var cityArray = [];
-var initialLoad = 0; //DOM Element Calls
+var cityArray = []; //DOM Element Calls
 
 var submitButton = document.getElementById('submitButton');
 var playAgain = document.getElementById('playAgain');
 var distanceDisplay = document.getElementById('distance');
+var outputText = " ";
 playAgain.style.display = 'none'; //Generates Random numbers given the range
 
 var randomNumberGenerator = function randomNumberGenerator(maxRange) {
@@ -33,10 +34,12 @@ var randomNumberGenerator = function randomNumberGenerator(maxRange) {
 
 
 var imageGame = function imageGame(text) {
-  initialLoad++;
+  outputText = " ";
+  document.getElementById("distance").innerHTML = " ";
+  cityName = text;
   playAgain.style.display = 'none';
   submitButton.style.display = 'block';
-  var queryUrl = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=".concat(text, "&inputtype=textquery&fields=photos,geometry,place_id,type,formatted_address,name,opening_hours,rating&key=").concat(key);
+  var queryUrl = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=".concat(cityName, "&inputtype=textquery&fields=photos,geometry,place_id,type,formatted_address,name,opening_hours,rating&key=").concat(key);
   fetch(proxyUrl + queryUrl).then(function (response) {
     return response.json();
   }).then(function (data) {
@@ -149,7 +152,13 @@ var submitGuess = function submitGuess() {
     });
     var distM = haversineDistance(mk1, mk2);
     var distKm = distM * 1.60934;
-    document.getElementById("distance").innerHTML = distKm;
+
+    if (distKm <= 100) {
+      outputText = "Wow thats very impressive! ";
+    }
+
+    outputText += "You were " + distKm.toFixed(1) + " Km away from the city of " + cityName + " !";
+    document.getElementById("distance").innerHTML = outputText;
     var line = new google.maps.Polyline({
       path: [actualPoint, guessPoint],
       map: map
@@ -166,7 +175,7 @@ var city = function city() {
     while (1) {
       switch (_context.prev = _context.next) {
         case 0:
-          total = 1000;
+          total = 300;
           paramAPI = encodeURIComponent(JSON.stringify({
             "population": {
               "$gte": 750000
@@ -196,7 +205,6 @@ var city = function city() {
             if (!cityArray.includes(data.results[numb].name)) {
               cityArray.push(data.results[numb].name);
               imageGame(data.results[numb].name);
-              console.log(data.results[numb].name);
             } else {
               city();
             }

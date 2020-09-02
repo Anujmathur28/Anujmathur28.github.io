@@ -57,6 +57,16 @@ li {
     background-color: white;
 }
 
+.mainDiv{
+    background-image: url("images/white.png");
+}
+
+#distance{
+    font-family: 'Barlow', sans-serif;
+    font-size: 40px;
+    color: #3b305e;
+    word-wrap: normal;
+}
 
 #quotes {
     font-family: 'Barlow', sans-serif;

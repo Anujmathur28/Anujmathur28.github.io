@@ -15,17 +15,16 @@ let placeId;
 const key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM';
 const proxyUrl = "https://cors-anywhere.herokuapp.com/";
 let photoArray = [];
+let cityName;
 
 //Verification
 let markerClickCount;
 let cityArray = [];
-let initialLoad = 0;
-
 //DOM Element Calls
 let submitButton = document.getElementById('submitButton');
 let playAgain = document.getElementById('playAgain');
 let distanceDisplay = document.getElementById('distance');
-
+let outputText = " ";
 playAgain.style.display = 'none';
 
 //Generates Random numbers given the range
@@ -36,11 +35,13 @@ let randomNumberGenerator = function (maxRange) {
 
 //Main function to run the game
 let imageGame = function (text) {
-    initialLoad ++;
+    outputText = " ";
+    document.getElementById("distance").innerHTML = " ";
+    cityName = text;
     playAgain.style.display = 'none';
     submitButton.style.display = 'block';
 
-    const queryUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${text}&inputtype=textquery&fields=photos,geometry,place_id,type,formatted_address,name,opening_hours,rating&key=${key}`;
+    const queryUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${cityName}&inputtype=textquery&fields=photos,geometry,place_id,type,formatted_address,name,opening_hours,rating&key=${key}`;
 
     fetch(proxyUrl + queryUrl).then(function (response) {
         return response.json();
@@ -48,6 +49,7 @@ let imageGame = function (text) {
         placeId = data.candidates[0].place_id;
         imageScroll(placeId);
     });
+    
     
     map = reloadMap();
     myMap();
@@ -155,7 +157,9 @@ let submitGuess = function () {
         });
         let distM = haversineDistance(mk1, mk2);
         let distKm = distM * 1.60934;
-        document.getElementById("distance").innerHTML = distKm;
+        if(distKm <= 100){outputText = "Wow thats very impressive! ";}
+        outputText += "You were " + distKm.toFixed(1) + " Km away from the city of " + cityName +" !";
+        document.getElementById("distance").innerHTML = outputText;
         let line = new google.maps.Polyline({
             path: [actualPoint, guessPoint],
             map: map
@@ -170,7 +174,7 @@ let submitGuess = function () {
 //Call api and generate a city name
 let city = async function () {
 
-    let total = 1000;
+    let total = 300;
 
     const paramAPI = encodeURIComponent(JSON.stringify({
         "population": {
@@ -198,7 +202,6 @@ let city = async function () {
         if (!(cityArray.includes(data.results[numb].name))) {
             cityArray.push(data.results[numb].name);
             imageGame(data.results[numb].name);
-            console.log(data.results[numb].name);
         } else {
             city();
         }
