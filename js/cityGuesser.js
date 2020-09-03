@@ -15,7 +15,11 @@ let placeId;
 const key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM';
 const proxyUrl = "https://cors-anywhere.herokuapp.com/";
 let photoArray = [];
+let cityAndCountry;
 let cityName;
+let country;
+let total = 24150;
+let numb;
 
 //Verification
 let markerClickCount;
@@ -37,11 +41,10 @@ let randomNumberGenerator = function (maxRange) {
 let imageGame = function (text) {
     outputText = " ";
     document.getElementById("distance").innerHTML = " ";
-    cityName = text;
     playAgain.style.display = 'none';
     submitButton.style.display = 'block';
 
-    const queryUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${cityName}&inputtype=textquery&fields=photos,geometry,place_id,type,formatted_address,name,opening_hours,rating&key=${key}`;
+    const queryUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${text}&inputtype=textquery&fields=photos,geometry,place_id,type,formatted_address,name,opening_hours,rating&key=${key}`;
 
     fetch(proxyUrl + queryUrl).then(function (response) {
         return response.json();
@@ -158,7 +161,7 @@ let submitGuess = function () {
         let distM = haversineDistance(mk1, mk2);
         let distKm = distM * 1.60934;
         if(distKm <= 100){outputText = "Wow thats very impressive! ";}
-        outputText += "You were " + distKm.toFixed(1) + " Km away from the city of " + cityName +" !";
+        outputText += "You were " + distKm.toFixed(1) + " Km away from the city of " + cityName +" in " + country + "!";
         document.getElementById("distance").innerHTML = outputText;
         let line = new google.maps.Polyline({
             path: [actualPoint, guessPoint],
@@ -173,46 +176,25 @@ let submitGuess = function () {
 
 //Call api and generate a city name
 let city = async function () {
-
-    let total = 300;
-
-    const paramAPI = encodeURIComponent(JSON.stringify({
-        "population": {
-            "$gte": 750000
-        },
-        "name": {
-            "$exists": true
-        }
-    }));
-
+    //The City Data is found from http://geodb-cities-api.wirefreethought.com/ Please try it out!
+    numb = randomNumberGenerator(total);
     const response = await fetch(
-        `https://parseapi.back4app.com/classes/Continentscountriescities_City?limit=${total}&where=${paramAPI}`, {
-            headers: {
-                'X-Parse-Application-Id': 'HJfJB7lN31lPNqinprcyGadSouGfk82CWZp36FTh',
-                'X-Parse-REST-API-Key': 'L79QejO3vPvlM4Vyzw88qDIgZSRUQfXjoPf6WSh2',
-            }
-        }
+        `http://geodb-free-service.wirefreethought.com/v1/geo/cities?minPopulation=40000&limit=1&offset=${numb}&hateoasMode=off`
     );
 
-    const data = await response.json();
-    
+    const output = await response.json();
 
-    let numb = randomNumberGenerator(total);
-    if (typeof data.results[numb] !== 'undefined') {
-        if (!(cityArray.includes(data.results[numb].name))) {
-            cityArray.push(data.results[numb].name);
-            imageGame(data.results[numb].name);
+    country = output.data[0].country;
+    cityName = output.data[0].name;
+    cityAndCountry = output.data[0].name + " " + country;
+    console.log(output);
+    if (typeof cityAndCountry !== 'undefined') {
+        if (!(cityArray.includes(cityAndCountry))) {
+            cityArray.push(cityAndCountry);
+            imageGame(cityAndCountry);
         } else {
             city();
         }
     }
-
-
 };
 
-//JQuery function to disable right clicks
-(function ($) {
-    $(document).on('contextmenu', 'img', function () {
-        return false;
-    })
-})(jQuery);
