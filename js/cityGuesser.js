@@ -15,10 +15,9 @@ let placeId;
 const key = 'AIzaSyA2tLUogp1e_tnALcAO1-v_PLhcxdedoxM';
 const proxyUrl = "https://cors-anywhere.herokuapp.com/";
 let photoArray = [];
-let cityAndCountry;
 let cityName;
 let country;
-let total = 24150;
+let total = 1000;
 let numb;
 
 //Verification
@@ -38,20 +37,20 @@ let randomNumberGenerator = function (maxRange) {
 }
 
 //Main function to run the game
-let imageGame = function (text) {
-    outputText = " ";
+let imageGame = async function (text) {
+    cityName = text;
     document.getElementById("distance").innerHTML = " ";
     playAgain.style.display = 'none';
     submitButton.style.display = 'block';
 
     const queryUrl = `https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=${text}&inputtype=textquery&fields=photos,geometry,place_id,type,formatted_address,name,opening_hours,rating&key=${key}`;
 
-    fetch(proxyUrl + queryUrl).then(function (response) {
+    await fetch(proxyUrl + queryUrl).then(function (response) {
         return response.json();
-    }).then(function (data) {
-        placeId = data.candidates[0].place_id;
-        imageScroll(placeId);
-    });
+    }).then(async function (data) {
+            placeId = data.candidates[0].place_id;
+            await imageScroll(placeId);
+        });
     
     
     map = reloadMap();
@@ -60,11 +59,11 @@ let imageGame = function (text) {
 }
 
 //Generates images and outputs to HTML 
-let imageScroll = function (placeId) {
+let imageScroll = async function (placeId) {
 
     let imgUrl = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&fields=geometry,plus_code,photo,name,rating&key=${key}`;
 
-    fetch(proxyUrl + imgUrl).then(function (response) {
+    await fetch(proxyUrl + imgUrl).then(function (response) {
         return response.json();
 
     }).then(function (data) {
@@ -161,7 +160,7 @@ let submitGuess = function () {
         let distM = haversineDistance(mk1, mk2);
         let distKm = distM * 1.60934;
         if(distKm <= 100){outputText = "Wow thats very impressive! ";}
-        outputText += "You were " + distKm.toFixed(1) + " Km away from the city of " + cityName +" in " + country + "!";
+        outputText += "You were " + distKm.toFixed(1) + " Km away from the city of " + cityName+ "in " + country + "!";
         document.getElementById("distance").innerHTML = outputText;
         let line = new google.maps.Polyline({
             path: [actualPoint, guessPoint],
@@ -177,24 +176,35 @@ let submitGuess = function () {
 //Call api and generate a city name
 let city = async function () {
     //The City Data is found from http://geodb-cities-api.wirefreethought.com/ Please try it out!
-    numb = randomNumberGenerator(total);
-    const response = await fetch(
-        `http://geodb-free-service.wirefreethought.com/v1/geo/cities?minPopulation=40000&limit=1&offset=${numb}&hateoasMode=off`
-    );
-
-    const output = await response.json();
-
-    country = output.data[0].country;
-    cityName = output.data[0].name;
-    cityAndCountry = output.data[0].name + " " + country;
-    console.log(output);
-    if (typeof cityAndCountry !== 'undefined') {
-        if (!(cityArray.includes(cityAndCountry))) {
-            cityArray.push(cityAndCountry);
-            imageGame(cityAndCountry);
-        } else {
-            city();
+    const where = encodeURIComponent(JSON.stringify({
+        "population": {
+          "$gte": 750000,
+            "$gte": 750000
+        },
+        "name": {
+          "$exists": true,
+            "$exists": true
         }
+      }));
+
+      const response = await fetch(
+        `https://parseapi.back4app.com/classes/Continentscountriescities_City?limit=${total}&keys=name,country,country.name&where=${where}`,
+        {
+          headers: {
+            'X-Parse-Application-Id': 'HJfJB7lN31lPNqinprcyGadSouGfk82CWZp36FTh', // This is your app's application id
+            'X-Parse-REST-API-Key': 'L79QejO3vPvlM4Vyzw88qDIgZSRUQfXjoPf6WSh2', // This is your app's REST API key
+          }
+    });
+
+      const data = await response.json(); // Here you have the data that you need
+      numb = randomNumberGenerator(total);
+      country = data.results[numb].country.name;
+      if (typeof data.results[numb] !== 'undefined') {
+        if (!(cityArray.includes(data.results[numb].name))){
+         cityArray.push(data.results[numb].name);
+         imageGame(data.results[numb].name);}
+     else{city();}
     }
+    
 };
 
