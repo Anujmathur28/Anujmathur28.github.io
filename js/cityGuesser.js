@@ -160,7 +160,7 @@ let submitGuess = function () {
         let distM = haversineDistance(mk1, mk2);
         let distKm = distM * 1.60934;
         if(distKm <= 100){outputText = "Wow thats very impressive! ";}
-        outputText += "You were " + distKm.toFixed(1) + " Km away from the city of " + cityName+ "in " + country + "!";
+        outputText += "You were " + distKm.toFixed(1) + " Km away from the city of " + cityName+ " in " + country + "!";
         document.getElementById("distance").innerHTML = outputText;
         let line = new google.maps.Polyline({
             path: [actualPoint, guessPoint],

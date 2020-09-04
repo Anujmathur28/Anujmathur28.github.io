@@ -201,7 +201,7 @@ var submitGuess = function submitGuess() {
       outputText = "Wow thats very impressive! ";
     }
 
-    outputText += "You were " + distKm.toFixed(1) + " Km away from the city of " + cityName + "in " + country + "!";
+    outputText += "You were " + distKm.toFixed(1) + " Km away from the city of " + cityName + " in " + country + "!";
     document.getElementById("distance").innerHTML = outputText;
     var line = new google.maps.Polyline({
       path: [actualPoint, guessPoint],
